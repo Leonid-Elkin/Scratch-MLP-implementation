@@ -1,7 +1,7 @@
 import numpy as np
 
 class MLP:
-    def __init__(self, layers, activation, clipValue, weightInit, seed=None):
+    def __init__(self, layers, activation, clipValue = 500, weightInit = None, seed=None):
         np.random.seed(seed)
         self.numLayers = len(layers)
         self.layerSizes = layers
@@ -37,11 +37,11 @@ class MLP:
     def reluDerivative(self, x):
         return np.where(x > 0, 1, 0)
 
-    def leakyRelu(self, x, a = 0.01):
+    def leakyRelu(self, x, a = 0.005):
         x = np.clip(x, -self.clipValue, self.clipValue)
         return np.where(x > 0, x, a * x)
 
-    def leakyReluDerivative(self, x, a=0.01):
+    def leakyReluDerivative(self, x, a=0.005):
         return np.where(x > 0, 1, a)
 
     def softmax(self, x):
@@ -137,7 +137,7 @@ class MLP:
 
             # This apparently works even though its everything just timed together
 
-    def train(self, inputs, targets, numEpochs, lr, batchSize, testInputs, testLabels, lrDecay=False, decayRate=0.95, avgLossToggle=False, recordUsage=False, epochLosses=False):
+    def train(self, inputs, targets, numEpochs, lr, batchSize, testInputs, testLabels, lrDecay=False, decayRate=0.95, avgLossToggle=False, recordUsage=False, epochLosses=False,stopper = False):
         indexes = inputs.shape[0]
         lossList = []
         usageSuperlist = []
@@ -176,8 +176,15 @@ class MLP:
                 usageSuperlist.append([avgLoss, self.CPUUsage])
     
 
-            if avgLossToggle:
-                lossList.append(avgLoss)
+
+            lossList.append(avgLoss)
+
+            if stopper:
+                if len(lossList) > 1:
+                    print(lossList[-1] / lossList[-2])
+                    if lossList[-1] / lossList[-2] > 0.99:
+                        print("Stopped")
+                        break
 
             print(f'Epoch {epoch + 1} / {numEpochs}, Average Loss: {avgLoss:.10f}, CPU FLOPs: {self.CPUUsage} lr: {lr:.10f}')
 

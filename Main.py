@@ -99,7 +99,7 @@ def hyperparameterChanges(variable, start = 0, end = 0, step = 0, start2 = None,
 
     if variable == 'size':
         layerN = start2
-        epochs = 1
+        epochs = 10
         while layerN < end2:
             nodeSizes = start
             accuracyList = []
@@ -117,7 +117,7 @@ def hyperparameterChanges(variable, start = 0, end = 0, step = 0, start2 = None,
                 
             
             print(accuracyList)
-            plotMovingAverage([accuracyList],2,step)
+            plotMovingAverage([accuracyList],2)
             print(f"Max accuracy at {start + step * accuracyList.index(max(accuracyList))} layer size and {layerN} layers")
             layerN += step2
 
@@ -165,6 +165,7 @@ def hyperparameterChanges(variable, start = 0, end = 0, step = 0, start2 = None,
 def loadCIFAR():
 
     #Change number of input nodes to 3072
+    LAYERS[0] = 3072
 
     from tensorflow.keras.datasets import cifar10
 
@@ -178,37 +179,52 @@ def loadCIFAR():
     return trainingImages, testingImages, trainingLabels, testingLabels
  
 
-def trainBest():
-    #Tweak random seed for best weight init. Best I got is 0.984 but lost seed and config
-    seed = 1000
-    LAYERS = [784,700,350,10]
+def trainBestMNIST():
+    #Best accuracy I got is 0.9852
+
+    LAYERS = [784,575,10]       
     maxAllowableOutput = 500
-    epochs = 15
+    epochs = 16
     lr = 0.01
-    batchSize = 50 
-    mlp = MLP(LAYERS,'sigmoid',maxAllowableOutput,'xavier',seed)
-    mlp.train(trainingImages,trainingLabels,epochs,lr,batchSize,testingImages,testingLabels,True,0.9)
+    batchSize = 50
+    seed = 100
+
+    mlp = MLP(LAYERS,'relu',maxAllowableOutput,'he',seed)
+    mlp.train(trainingImages,trainingLabels,epochs,lr,batchSize,testingImages,testingLabels,True,0.9,False,False,False,True)
     return mlp
 
+def trainBestFashionMNIST():
+    #Best accuracy I got is 0.8967
 
-trainingImages, testingImages, trainingLabels, testingLabels = loadMNIST()
+    LAYERS = [784,64,10]       
+    maxAllowableOutput = 500
+    epochs = 30
+    lr = 0.01
+    batchSize = 50
+    seed = 104
+
+    mlp = MLP(LAYERS,'relu',maxAllowableOutput,'he',seed)
+    mlp.train(trainingImages,trainingLabels,epochs,lr,batchSize,testingImages,testingLabels,True,0.9,False,False,False,True)
+    return mlp
+
+trainingImages, testingImages, trainingLabels, testingLabels = loadFashionMNIST()
 
 saveFileName = 'SaveFile.txt'
-LAYERS = [784,516,256,10]
+LAYERS = [784,575,10]       
 activationFunction = 'sigmoid'
 maxAllowableOutput = 500
-epochs = 100
-lr = 0.01
+epochs = 15
+lr = 0.005
 batchSize = 50
-traintestratio = 0.90   
+traintestratio = 0.90  
 
 
 # showImg(trainingImages[1])
 
-mlp = MLP(LAYERS,'relu',maxAllowableOutput,'he')
-mlp.train(trainingImages,trainingLabels,epochs,lr,batchSize,testingImages,testingLabels,True,0.75)
+#mlp = MLP(LAYERS,'relu',maxAllowableOutput,'he',100)
+#mlp.train(trainingImages,trainingLabels,epochs,lr,batchSize,testingImages,testingLabels,True,0.9)
 
-#mlp = trainBest()
+mlp = trainBestFashionMNIST()
 
 answers = np.argmax(testingLabels, axis=1)
 
@@ -218,10 +234,10 @@ answers = np.argmax(testingLabels, axis=1)
 
 #hyperparameterChanges('optimizers',0,0.1,0.01)
 
-#hyperparameterChanges('EfficiencyFrontier',10,100,10,1,2,1)
+#hyperparameterChanges('size',400,1000,100,1,2,1)
 results = mlp.predict(testingImages)
 accuracy = checkAccuracy(results,answers)
-print(accuracy)
+print(f'Final accuracy from the test dataset: {accuracy:.4f} with {LAYERS} node layout')
 
 #mlp.save(saveFileName)
 #mlp.load(saveFileName)
