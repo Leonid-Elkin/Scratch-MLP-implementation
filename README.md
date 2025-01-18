@@ -2,3 +2,5 @@ This is the neural network implemented entierly with low level libraries such as
 For example the hyperparameterChanges function in the Main program is able to plot graphs to display how each change of a hyperparameter affects accuracy. Another thing I measure is the computer efficiency frontier.
 
 This is very much a work in progress so far so some things here may not work/make much sense
+
+18/01/2025 - Achieved a 98.52 percent accuracy on MNIST. This is better than most of the other implementations I've seen
