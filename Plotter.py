@@ -1,30 +1,36 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-def plotMovingAverage(dataList, depth, multiplier = 1,logScale = False):
+def plotMovingAverage(dataList, depth, multiplier=1, labels=None, logScale=False,start=0):
+    """Plots moving average of input data
+        multiplier defines scale of x axis
+        start paramater defines start of x axis.
+    """
     plt.figure(figsize=(10, 6))
-    
-    for data in dataList:
-        data = np.array(data)
 
-        movingAvg = np.convolve(data, np.ones(depth) / depth, mode='valid')
-        
-        values = np.arange(len(movingAvg)) * multiplier
-        
-        plt.plot(values, movingAvg)
+    for i, data in enumerate(dataList): # for every list in datalist
+        movingAvg = np.convolve(data, np.ones(depth) / depth, mode='valid') 
+        # calculate moving average using convolve mathematical function and a list with only ones
+        plt.plot(np.arange(len(movingAvg)) * multiplier+start, movingAvg, label=labels[i]) 
+        # plots points and applies x axis scaling
 
-    
-    if logScale:
+    if logScale: # log scale toggle
         plt.yscale('log')
         plt.xscale('log')
-    
-    plt.title("Moving Averages for ReLU")
-    plt.xlabel("Network Layers (scaled)")
-    plt.ylabel("Accuracy")
+
+    plt.xlabel("layer size")
+    plt.ylabel("accuracy")
     plt.grid()
+    plt.legend()
     plt.show()
 
+
 def plotPolynomialWithTwo(data, logScale = False):
+    """
+    Plots graph with two axis inputs. Takes in list with sublists with two values each, x and y respectively.
+    logScale changes both y and x axis to logarithmic
+    """
+
     plt.figure(figsize=(10, 6))
     
     for item in data:
