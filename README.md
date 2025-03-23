@@ -3,7 +3,7 @@ For example the hyperparameterChanges function in the Main program is able to pl
 
 This is very much a work in progress so far so some things here may not work/make much sense
 
-18/01/2025 - Achieved a 98.52 percent accuracy on MNIST. This is better than most of the other implementations I've seen
+18/01/2025 - Achieved a 98.51 percent accuracy on MNIST. This is better than most of the other implementations I've seen
 
 08/03/2025 - This is pretty much the finished product. I am not sure if I can improve this any more.
 
